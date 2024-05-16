@@ -12,6 +12,27 @@ class RecipeCard extends HTMLElement {
 		// A3. TODO - Create a style element - This will hold all of the styles for the Web Component
 		// A4. TODO - Insert all of the styles from cardTemplate.html into the <style> element you just made (copy everything in the <style> tag>)
 		// A5. TODO - Append the <style> and <article> elements to the Shadow DOM
+
+		//A1
+		this.attachShadow({mode:"open"});
+		//A2
+		let articleElement = document.createElement("article");
+		//A3
+		let styleElement = document.createElement("style");
+		//A4
+		fetch("reference/cardTemplate.html")
+		.then(response => response.text())
+		.then(data => {
+			let parser = new DOMParser();
+			let htmlDocument = parser.parseFromString(data, 'text/html');
+			let styleElementInTemplate = htmlDocument.querySelector('style');
+			styleElement.textContent = styleElementInTemplate.textContent;
+		})
+		.catch(error => console.error('Error:', error));
+		// A5
+ 		this.shadowRoot.appendChild(styleElement);
+		this.shadowRoot.appendChild(articleElement);
+			
 	}
 
 	/**
@@ -46,8 +67,29 @@ class RecipeCard extends HTMLElement {
 		//           literals (template strings) and element.innerHTML for this.
 		//           Remember to replace all the placeholders in the template with the data passed in.
 		//           i.e. imgSrc, titleLnk, etc
+
+		//A6
+		let articleElement = this.shadowRoot.querySelector('article');
+		// A7
+		articleElement.innerHTML = `
+		<img src="${data.imgSrc}" alt="${data.imgAlt}">
+		<p class="title">
+			<a href="${data.titleLnk}">${data.titleTxt}</a>
+		</p>
+		<p class="organization">${data.organization}</p>
+		<div class="rating">
+			<span>${data.rating}</span>
+			<img src="/assets/images/icons/${data.rating}-star.svg" alt="${data.rating} stars">
+			<span>(${data.numRatings})</span>
+		</div>
+		<time>${data.lengthTime}</time>
+		<p class="ingredients">${data.ingredients}</p>
+	`;
 	}
 }
 
 // A8. TODO - Define the Class as a customElement so that you can create
 //           'recipe-card' elements
+
+// A8
+customElements.define('recipe-card', RecipeCard);
